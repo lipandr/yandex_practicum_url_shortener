@@ -7,8 +7,8 @@ type Store struct {
 }
 
 var (
-	keyNotFoundError     = errors.New("the key is not found")
-	keyNotSpecifiedError = errors.New("the key is not specified")
+	errKeyNotFound     = errors.New("the key is not found")
+	errKeyNotSpecified = errors.New("the key is not specified")
 )
 
 func NewStorage() *Store {
@@ -19,17 +19,17 @@ func NewStorage() *Store {
 
 func (s *Store) Get(key string) (string, error) {
 	if key == "" {
-		return "", keyNotSpecifiedError
+		return "", errKeyNotSpecified
 	}
 	if value, ok := s.data[key]; ok {
 		return value, nil
 	}
-	return "", keyNotFoundError
+	return "", errKeyNotFound
 }
 
 func (s *Store) Put(key, value string) error {
 	if key == "" {
-		return keyNotSpecifiedError
+		return errKeyNotSpecified
 	}
 	s.data[key] = value
 	return nil

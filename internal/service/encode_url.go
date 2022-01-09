@@ -4,7 +4,7 @@ import "strconv"
 
 var i int
 
-func (svc *service) EncodeUrl(url string) (string, error) {
+func (svc *service) EncodeURL(url string) (string, error) {
 	hash := svc.generateHash()
 	err := svc.store.Put(hash, url)
 	if err != nil {

@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func (a *application) DecodeUrl(w http.ResponseWriter, r *http.Request) {
+func (a *application) DecodeURl(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
-	url, err := a.svc.GetFullUrl(key)
+	url, err := a.svc.GetFullURL(key)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

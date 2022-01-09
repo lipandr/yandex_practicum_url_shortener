@@ -32,7 +32,7 @@ func TestHandlers(t *testing.T) {
 	}{
 		{
 			name:    "positive encode test #1",
-			handler: app.EncodeUrl,
+			handler: app.EncodeURL,
 			method:  http.MethodPost,
 			target:  "",
 			body:    "https://google.com",
@@ -43,7 +43,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "positive decode test #1",
-			handler: app.DecodeUrl,
+			handler: app.DecodeURl,
 			method:  http.MethodGet,
 			target:  "1",
 			body:    "",
@@ -55,7 +55,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "negative decode test #1",
-			handler: app.DecodeUrl,
+			handler: app.DecodeURl,
 			method:  http.MethodGet,
 			target:  "7",
 			body:    "",
@@ -65,7 +65,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "positive encode test #2",
-			handler: app.EncodeUrl,
+			handler: app.EncodeURL,
 			method:  http.MethodPost,
 			target:  "",
 			body:    "https://yandex.ru",
@@ -76,7 +76,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "positive decode test #2",
-			handler: app.DecodeUrl,
+			handler: app.DecodeURl,
 			method:  http.MethodGet,
 			target:  "2",
 			body:    "",
