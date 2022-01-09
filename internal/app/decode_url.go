@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (a *application) DecodeURl(w http.ResponseWriter, r *http.Request) {
+func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 	url, err := a.svc.GetFullURL(key)

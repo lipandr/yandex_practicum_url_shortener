@@ -43,7 +43,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "positive decode test #1",
-			handler: app.DecodeURl,
+			handler: app.DecodeURL,
 			method:  http.MethodGet,
 			target:  "1",
 			body:    "",
@@ -55,7 +55,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "negative decode test #1",
-			handler: app.DecodeURl,
+			handler: app.DecodeURL,
 			method:  http.MethodGet,
 			target:  "7",
 			body:    "",
@@ -76,7 +76,7 @@ func TestHandlers(t *testing.T) {
 		},
 		{
 			name:    "positive decode test #2",
-			handler: app.DecodeURl,
+			handler: app.DecodeURL,
 			method:  http.MethodGet,
 			target:  "2",
 			body:    "",
