@@ -1,6 +1,9 @@
 package inmem
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+)
 
 type Store struct {
 	data map[string]string
@@ -33,4 +36,8 @@ func (s *Store) Put(key, value string) error {
 	}
 	s.data[key] = value
 	return nil
+}
+
+func (s *Store) GetCurrentSeq() string {
+	return strconv.Itoa(len(s.data) + 1)
 }
