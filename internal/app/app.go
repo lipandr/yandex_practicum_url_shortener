@@ -10,8 +10,9 @@ import (
 
 type Application interface {
 	Run() error
-	EncodeUrl(w http.ResponseWriter, r *http.Request)
-	DecodeUrl(w http.ResponseWriter, r *http.Request)
+	EncodeURL(w http.ResponseWriter, r *http.Request)
+	DecodeURL(w http.ResponseWriter, r *http.Request)
+	DefaultHandler(w http.ResponseWriter, r *http.Request)
 }
 
 type application struct {
@@ -25,13 +26,9 @@ func NewApp(svc service.Service) *application {
 func (a *application) Run() error {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", a.EncodeUrl).Methods("POST")
-	r.HandleFunc("/{key}", a.DecodeUrl).Methods("GET")
-	r.HandleFunc("/", a.defaultHandler)
+	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
+	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
+	r.HandleFunc("/", a.DefaultHandler)
 
 	return http.ListenAndServe(fmt.Sprintf("%s:%d", config.Host, config.Port), r)
-}
-
-func (a *application) defaultHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusBadRequest)
 }

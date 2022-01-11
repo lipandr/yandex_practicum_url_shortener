@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (a *application) EncodeUrl(w http.ResponseWriter, r *http.Request) {
+func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	value, err := ioutil.ReadAll(r.Body)
 	defer func() { _ = r.Body.Close() }()
 
@@ -16,7 +16,7 @@ func (a *application) EncodeUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := string(value)
-	key, err := a.svc.EncodeUrl(url)
+	key, err := a.svc.EncodeURL(url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

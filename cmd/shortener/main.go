@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	store := inmem.NewStorage()
-	svc := service.NewService(store)
+	rep := inmem.NewStorage()
+	svc := service.NewService(rep)
 	urlApp := app.NewApp(svc)
 
 	log.Fatal(urlApp.Run())
