@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"net/http"
 )
 
@@ -46,7 +45,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	res := ApiJSONResponse{
-		Result: fmt.Sprintf("http://%s:%d/%s", config.Host, config.Port, key),
+		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),
 	}
 	err = json.NewEncoder(w).Encode(res)
 

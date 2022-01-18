@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"io/ioutil"
@@ -13,9 +14,13 @@ import (
 )
 
 func TestHandlers(t *testing.T) {
+	cfg := config.Config{
+		ServerAddress: "localhost:8080",
+		BaseURL:       "http://localhost:8080",
+	}
 	storage := inmem.NewStorage()
 	svc := service.NewService(storage)
-	app := NewApp(svc)
+	app := NewApp(cfg, svc)
 
 	type want struct {
 		code        int

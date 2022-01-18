@@ -17,11 +17,12 @@ type Application interface {
 }
 
 type application struct {
+	cfg config.Config
 	svc service.Service
 }
 
-func NewApp(svc service.Service) *application {
-	return &application{svc: svc}
+func NewApp(cfg config.Config, svc service.Service) *application {
+	return &application{cfg: cfg, svc: svc}
 }
 
 func (a *application) Run() error {
@@ -32,5 +33,5 @@ func (a *application) Run() error {
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", config.Host, config.Port), r)
+	return http.ListenAndServe(fmt.Sprintf("%s", a.cfg.ServerAddress), r)
 }

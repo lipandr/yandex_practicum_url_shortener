@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"io/ioutil"
 	"net/http"
 )
@@ -23,7 +22,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte(fmt.Sprintf("http://%s:%d/%s", config.Host, config.Port, key)))
+	_, err = w.Write([]byte(fmt.Sprintf("%s/%s", a.cfg.BaseURL, key)))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
