@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
@@ -33,5 +32,5 @@ func (a *application) Run() error {
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
-	return http.ListenAndServe(fmt.Sprintf("%s", a.cfg.ServerAddress), r)
+	return http.ListenAndServe(a.cfg.ServerAddress, r)
 }
