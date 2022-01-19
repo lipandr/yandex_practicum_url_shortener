@@ -44,8 +44,7 @@ func loadURLsFromFile(inMemory *inmem.Store, fileStoragePath string) (err error)
 			return
 		}
 		line := scanner.Text()
-		var data []string
-		data = strings.Split(line, " ")
+		data := strings.Split(line, " ")
 
 		if err := inMemory.Put(data[0], data[1]); err != nil {
 			return err
