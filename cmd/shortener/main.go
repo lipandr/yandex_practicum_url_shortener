@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"github.com/caarlos0/env/v6"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
-	"log"
-
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
+	"log"
 )
 
 func main() {
@@ -19,9 +18,10 @@ func main() {
 	}
 	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "Server address")
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL")
+	flag.StringVar(&cfg.FileStoragePath, "f", cfg.BaseURL, "File Storage Path")
 	flag.Parse()
 
-	rep := inmem.NewStorage()
+	rep := persistent.NewStorage(cfg.FileStoragePath)
 	svc := service.NewService(rep)
 	urlApp := app.NewApp(cfg, svc)
 
