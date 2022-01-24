@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
@@ -11,24 +10,27 @@ import (
 type Application interface {
 	Run() error
 	EncodeURL(w http.ResponseWriter, r *http.Request)
+	JSONEncodeURL(w http.ResponseWriter, r *http.Request)
 	DecodeURL(w http.ResponseWriter, r *http.Request)
 	DefaultHandler(w http.ResponseWriter, r *http.Request)
 }
 
 type application struct {
+	cfg config.Config
 	svc service.Service
 }
 
-func NewApp(svc service.Service) *application {
-	return &application{svc: svc}
+func NewApp(cfg config.Config, svc service.Service) *application {
+	return &application{cfg: cfg, svc: svc}
 }
 
 func (a *application) Run() error {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
+	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
-	return http.ListenAndServe(fmt.Sprintf("%s:%d", config.Host, config.Port), r)
+	return http.ListenAndServe(a.cfg.ServerAddress, r)
 }

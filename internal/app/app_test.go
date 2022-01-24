@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"io/ioutil"
@@ -13,9 +14,13 @@ import (
 )
 
 func TestHandlers(t *testing.T) {
+	cfg := config.Config{
+		ServerAddress: "localhost:8080",
+		BaseURL:       "http://localhost:8080",
+	}
 	storage := inmem.NewStorage()
 	svc := service.NewService(storage)
-	app := NewApp(svc)
+	app := NewApp(cfg, svc)
 
 	type want struct {
 		code        int
@@ -84,6 +89,30 @@ func TestHandlers(t *testing.T) {
 				code:        307,
 				response:    "<a href=\"https://yandex.ru\">Temporary Redirect</a>.\n\n",
 				contentType: "text/html; charset=utf-8",
+			},
+		},
+		{
+			name:    "positive JSON test #1",
+			handler: app.JSONEncodeURL,
+			method:  http.MethodPost,
+			target:  "/api/shorten",
+			body:    "{\"url\": \"https://google.com\"}",
+			want: want{
+				code:        201,
+				response:    "{\"result\":\"http://localhost:8080/3\"}\n",
+				contentType: "application/json",
+			},
+		},
+		{
+			name:    "negative JSON test #1",
+			handler: app.JSONEncodeURL,
+			method:  http.MethodPost,
+			target:  "/api/shorten",
+			body:    "{\"url\": \"\"}",
+			want: want{
+				code:        400,
+				response:    "incorrect JSON url\n",
+				contentType: "text/plain; charset=utf-8",
 			},
 		},
 	}
