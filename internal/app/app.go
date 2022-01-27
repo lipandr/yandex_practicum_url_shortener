@@ -20,7 +20,7 @@ type application struct {
 	svc service.Service
 }
 
-func NewApp(cfg config.Config, svc service.Service) *application {
+func NewApp(cfg config.Config, svc service.Service) Application {
 	return &application{cfg: cfg, svc: svc}
 }
 
