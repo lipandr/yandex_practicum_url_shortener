@@ -2,8 +2,10 @@ package app
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/app/middleware"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
+
 	"net/http"
 )
 
@@ -26,6 +28,8 @@ func NewApp(cfg config.Config, svc service.Service) Application {
 
 func (a *application) Run() error {
 	r := mux.NewRouter()
+
+	r.Use(middleware.GzipMiddleware)
 
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
