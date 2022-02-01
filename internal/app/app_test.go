@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -15,11 +14,14 @@ import (
 
 func TestHandlers(t *testing.T) {
 	cfg := config.Config{
-		ServerAddress: "localhost:8080",
-		BaseURL:       "http://localhost:8080",
+		ServerAddress:   "localhost:8080",
+		BaseURL:         "http://localhost:8080",
+		FileStoragePath: "temp.txt",
 	}
-	storage := inmem.NewStorage()
-	svc := service.NewService(storage)
+	svc, err := service.NewService(cfg.FileStoragePath)
+	if err != nil {
+		t.Fatal(err)
+	}
 	app := NewApp(cfg, svc)
 
 	type want struct {
