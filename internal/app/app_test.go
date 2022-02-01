@@ -14,11 +14,10 @@ import (
 
 func TestHandlers(t *testing.T) {
 	cfg := config.Config{
-		ServerAddress:   "localhost:8080",
-		BaseURL:         "http://localhost:8080",
-		FileStoragePath: "temp.txt",
+		ServerAddress: "localhost:8080",
+		BaseURL:       "http://localhost:8080",
 	}
-	svc, err := service.NewService(cfg.FileStoragePath)
+	svc, err := service.NewService("")
 	if err != nil {
 		t.Fatal(err)
 	}

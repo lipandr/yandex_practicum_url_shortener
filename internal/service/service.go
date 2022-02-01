@@ -17,15 +17,20 @@ type service struct {
 }
 
 func NewService(storagePath string) (*service, error) {
-	p, err := persistent.NewStorage(storagePath)
-	if err != nil {
-		return nil, err
-	}
 	im := inmem.NewStorage()
-	err = p.LoadURLsFromFile(im)
-	if err != nil {
-		return nil, err
+	var p *persistent.Persistent
+
+	if storagePath != "" {
+		p, err := persistent.NewStorage(storagePath)
+		if err != nil {
+			return nil, err
+		}
+		err = p.LoadURLsFromFile(im)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	return &service{
 		store:      im,
 		persistent: p,

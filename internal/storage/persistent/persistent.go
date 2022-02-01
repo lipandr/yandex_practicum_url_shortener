@@ -14,7 +14,7 @@ type Persistent struct {
 
 func NewStorage(storagePath string) (*Persistent, error) {
 	if storagePath == "" {
-		return nil, errors.New("No path specified")
+		return nil, errors.New("no path specified")
 	}
 
 	return &Persistent{
