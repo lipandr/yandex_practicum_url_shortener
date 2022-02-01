@@ -6,6 +6,10 @@ func (svc *service) EncodeURL(url string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	err = svc.persistent.StoreValue(hash, url)
+	if err != nil {
+		return "", err
+	}
 	return hash, nil
 }
 

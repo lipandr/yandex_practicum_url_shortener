@@ -2,12 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/caarlos0/env/v6"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
 	"log"
 )
 
@@ -22,9 +20,10 @@ func main() {
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "File Storage Path")
 	flag.Parse()
 
-	fmt.Println(cfg.FileStoragePath)
-	rep := persistent.NewStorage(cfg.FileStoragePath)
-	svc := service.NewService(rep)
+	svc, err := service.NewService(cfg.FileStoragePath)
+	if err != nil {
+		log.Fatal("Can't start application")
+	}
 	urlApp := app.NewApp(cfg, svc)
 
 	log.Fatal(urlApp.Run())

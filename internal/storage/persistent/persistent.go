@@ -2,35 +2,28 @@ package persistent
 
 import (
 	"bufio"
+	"errors"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
-	"log"
 	"os"
 	"strings"
 )
 
 type Persistent struct {
-	FileStoragePath string
-	inMemory        *inmem.Store
+	fileStoragePath string
 }
 
-func NewStorage(storagePath string) *Persistent {
-	inMemory := inmem.NewStorage()
-
-	if err := loadURLsFromFile(inMemory, storagePath); err != nil {
-		log.Fatal(err)
+func NewStorage(storagePath string) (*Persistent, error) {
+	if storagePath == "" {
+		return nil, errors.New("No path specified")
 	}
+
 	return &Persistent{
-		FileStoragePath: storagePath,
-		inMemory:        inMemory,
-	}
+		fileStoragePath: storagePath,
+	}, nil
 }
 
-func loadURLsFromFile(inMemory *inmem.Store, fileStoragePath string) (err error) {
-	if fileStoragePath == "" {
-		return
-	}
-
-	file, err := os.OpenFile(fileStoragePath, os.O_RDONLY|os.O_CREATE, 0777)
+func (s *Persistent) LoadURLsFromFile(inMemory *inmem.Store) (err error) {
+	file, err := os.OpenFile(s.fileStoragePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		return
 	}
@@ -53,42 +46,23 @@ func loadURLsFromFile(inMemory *inmem.Store, fileStoragePath string) (err error)
 	return
 }
 
-func (s *Persistent) Get(key string) (string, error) {
-	value, err := s.inMemory.Get(key)
-
+func (s *Persistent) StoreValue(key, value string) error {
+	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
 	if err != nil {
-		return "", err
-	}
-	return value, nil
-}
-
-func (s *Persistent) Put(key, value string) error {
-	if err := s.inMemory.Put(key, value); err != nil {
 		return err
 	}
 
-	if s.FileStoragePath != "" {
-		file, err := os.OpenFile(s.FileStoragePath, os.O_WRONLY|os.O_APPEND, 0777)
-		if err != nil {
-			return err
-		}
+	defer func() {
+		_ = file.Close()
+	}()
 
-		defer func() {
-			_ = file.Close()
-		}()
+	writer := bufio.NewWriter(file)
+	defer func() {
+		_ = writer.Flush()
+	}()
 
-		writer := bufio.NewWriter(file)
-		defer func() {
-			_ = writer.Flush()
-		}()
-
-		if _, err = writer.WriteString(key + " " + value + "\n"); err != nil {
-			return err
-		}
+	if _, err = writer.WriteString(key + " " + value + "\n"); err != nil {
+		return err
 	}
 	return nil
-}
-
-func (s *Persistent) GetCurrentSeq() string {
-	return s.inMemory.GetCurrentSeq()
 }
