@@ -30,12 +30,8 @@ func (s *Store) Get(key string) (string, error) {
 	return "", errKeyNotFound
 }
 
-func (s *Store) GetAllKeys() (map[string]string, error) {
-	res := s.data
-	if len(res) == 0 {
-		return nil, errKeyNotFound
-	}
-	return res, nil
+func (s *Store) GetAllKeys() map[string]string {
+	return s.data
 }
 
 func (s *Store) Put(key, value string) error {

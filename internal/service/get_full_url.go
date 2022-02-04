@@ -13,11 +13,9 @@ func (svc *service) GetFullURL(userID, key string) (string, error) {
 	return "", errors.New("not found")
 }
 
-func (svc *service) UsersURLs(userID string) (map[string]string, error) {
-	res, err := svc.store[userID].GetAllKeys()
-	if err != nil {
-		return nil, err
+func (svc *service) UsersURLs(userID string) map[string]string {
+	if svc.store[userID] != nil {
+		return svc.store[userID].GetAllKeys()
 	}
-
-	return res, nil
+	return map[string]string{}
 }

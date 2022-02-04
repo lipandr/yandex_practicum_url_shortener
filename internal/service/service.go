@@ -8,7 +8,7 @@ import (
 type Service interface {
 	GetFullURL(userID, key string) (string, error)
 	EncodeURL(userID, url string) (string, error)
-	UsersURLs(userID string) (map[string]string, error)
+	UsersURLs(userID string) map[string]string
 }
 
 type service struct {

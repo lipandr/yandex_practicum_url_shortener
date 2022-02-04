@@ -15,8 +15,8 @@ type UserJSON struct {
 func (a *application) UserURLs(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
-	urls, err := a.svc.UsersURLs(session.UserID)
-	if err != nil {
+	urls := a.svc.UsersURLs(session.UserID)
+	if len(urls) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
@@ -27,7 +27,7 @@ func (a *application) UserURLs(w http.ResponseWriter, r *http.Request) {
 		u = append(u, UserJSON{ShortURL: fmt.Sprintf("%s/%s", a.cfg.BaseURL, k), OriginalURL: v})
 	}
 
-	if err = json.NewEncoder(w).Encode(u); err != nil {
+	if err := json.NewEncoder(w).Encode(u); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
