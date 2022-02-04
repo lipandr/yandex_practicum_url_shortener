@@ -6,10 +6,11 @@ import (
 )
 
 func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userID").(string)
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	url, err := a.svc.GetFullURL(key)
+	url, err := a.svc.GetFullURL(userID, key)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

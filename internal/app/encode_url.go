@@ -7,6 +7,7 @@ import (
 )
 
 func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value("userID").(string)
 	value, err := ioutil.ReadAll(r.Body)
 	defer func() { _ = r.Body.Close() }()
 
@@ -15,7 +16,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := string(value)
-	key, err := a.svc.EncodeURL(url)
+	key, err := a.svc.EncodeURL(userID, url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

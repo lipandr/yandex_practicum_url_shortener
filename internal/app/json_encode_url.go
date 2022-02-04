@@ -24,6 +24,7 @@ func (r APIJSONRequest) Validate() error {
 
 func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	var req APIJSONRequest
+	userID := r.Context().Value("userID").(string)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -36,7 +37,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 
 	var url = req.URL
 
-	key, err := a.svc.EncodeURL(url)
+	key, err := a.svc.EncodeURL(userID, url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,8 +48,8 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	res := APIJSONResponse{
 		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),
 	}
-	err = json.NewEncoder(w).Encode(res)
 
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

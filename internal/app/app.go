@@ -29,11 +29,12 @@ func NewApp(cfg config.Config, svc service.Service) Application {
 func (a *application) Run() error {
 	r := mux.NewRouter()
 
-	r.Use(middleware.GzipMiddleware)
+	r.Use(middleware.GzipMiddleware, middleware.AuthMiddleware)
 
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
+	r.HandleFunc("/user/urls", a.UserURLs).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
 	return http.ListenAndServe(a.cfg.ServerAddress, r)

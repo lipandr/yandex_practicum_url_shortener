@@ -1,13 +1,21 @@
 package service
 
-func (svc *service) EncodeURL(url string) (string, error) {
-	hash := svc.generateHash()
-	err := svc.store.Put(hash, url)
+import (
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
+)
+
+func (svc *service) EncodeURL(userID, url string) (string, error) {
+	if svc.store[userID] == nil {
+		svc.store[userID] = inmem.NewStorage()
+	}
+	hash := svc.generateHash(userID)
+	err := svc.store[userID].Put(hash, url)
 	if err != nil {
 		return "", err
 	}
+
 	if svc.persistent != nil {
-		err = svc.persistent.StoreValue(hash, url)
+		err := svc.persistent.StoreValue(userID, hash, url)
 		if err != nil {
 			return "", err
 		}
@@ -16,6 +24,6 @@ func (svc *service) EncodeURL(url string) (string, error) {
 	return hash, nil
 }
 
-func (svc *service) generateHash() string {
-	return svc.store.GetCurrentSeq()
+func (svc *service) generateHash(userID string) string {
+	return svc.store[userID].GetCurrentSeq()
 }
