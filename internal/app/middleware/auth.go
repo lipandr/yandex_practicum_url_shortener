@@ -10,8 +10,6 @@ import (
 	"net/http"
 )
 
-const cookieName = "userID"
-
 var (
 	key = []byte{193, 175, 17, 153, 220, 178, 229, 188, 18, 205, 215, 225, 202,
 		239, 181, 31, 53, 150, 51, 111, 44, 36, 103, 199, 135, 185, 180, 234, 145, 255, 53, 93}
@@ -22,7 +20,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := uuid.NewString()
 		var isExistedUser bool
-		if ic, err := r.Cookie(cookieName); err == nil {
+		if ic, err := r.Cookie(string(types.UserIdSessionKey)); err == nil {
 			if dc, err := decrypt(ic.Value); err == nil {
 				userID = dc
 				isExistedUser = true
@@ -34,14 +32,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				http.Error(w, "Internal server error", 500)
 			}
 			oc := &http.Cookie{
-				Name:  cookieName,
+				Name:  string(types.UserIdSessionKey),
 				Value: ec,
 				Path:  `/`,
 			}
 			http.SetCookie(w, oc)
 		}
 
-		ctx := context.WithValue(r.Context(), cookieName, types.Session{UserID: userID})
+		ctx := context.WithValue(r.Context(), types.UserIdSessionKey, types.Session{UserID: userID})
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
