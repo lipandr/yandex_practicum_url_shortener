@@ -25,7 +25,7 @@ func (r APIJSONRequest) Validate() error {
 
 func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	var req APIJSONRequest
-	session := r.Context().Value(types.UserIdSessionKey).(types.Session)
+	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

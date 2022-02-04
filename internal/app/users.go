@@ -13,7 +13,7 @@ type UserJSON struct {
 }
 
 func (a *application) UserURLs(w http.ResponseWriter, r *http.Request) {
-	session := r.Context().Value(types.UserIdSessionKey).(types.Session)
+	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
 	urls, err := a.svc.UsersURLs(session.UserID)
 	if err != nil {

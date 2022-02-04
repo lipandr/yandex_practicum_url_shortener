@@ -7,7 +7,7 @@ import (
 )
 
 func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
-	session := r.Context().Value(types.UserIdSessionKey).(types.Session)
+	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 	vars := mux.Vars(r)
 	key := vars["key"]
 

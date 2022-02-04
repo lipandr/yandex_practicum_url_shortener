@@ -6,4 +6,4 @@ type Session struct {
 
 type SessionKey string
 
-const UserIdSessionKey SessionKey = "userID"
+const UserIDSessionKey SessionKey = "userID"
