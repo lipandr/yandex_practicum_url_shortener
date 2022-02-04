@@ -19,16 +19,16 @@ var (
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId := uuid.NewString()
+		userID := uuid.NewString()
 		var isExistedUser bool
 		if ic, err := r.Cookie(cookieName); err == nil {
 			if dc, err := decrypt(ic.Value); err == nil {
-				userId = dc
+				userID = dc
 				isExistedUser = true
 			}
 		}
 		if !isExistedUser {
-			ec, err := encrypt(userId)
+			ec, err := encrypt(userID)
 			if err != nil {
 				http.Error(w, "Internal server error", 500)
 			}
@@ -40,7 +40,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			http.SetCookie(w, oc)
 		}
 
-		ctx := context.WithValue(r.Context(), cookieName, userId)
+		ctx := context.WithValue(r.Context(), cookieName, userID)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
