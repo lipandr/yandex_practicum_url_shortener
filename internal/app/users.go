@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
 )
 
@@ -12,9 +13,9 @@ type UserJSON struct {
 }
 
 func (a *application) UserURLs(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	session := r.Context().Value("userID").(types.Session)
 
-	urls, err := a.svc.UsersURLs(userID)
+	urls, err := a.svc.UsersURLs(session.UserID)
 	if err != nil {
 		w.WriteHeader(http.StatusNoContent)
 		return

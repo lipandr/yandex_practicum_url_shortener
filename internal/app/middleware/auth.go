@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"github.com/google/uuid"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
 )
 
@@ -40,7 +41,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			http.SetCookie(w, oc)
 		}
 
-		ctx := context.WithValue(r.Context(), cookieName, userID)
+		ctx := context.WithValue(r.Context(), cookieName, types.Session{UserID: userID})
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
