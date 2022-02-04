@@ -51,7 +51,7 @@ func (s *Persistent) LoadURLsFromFile(ss map[string]*inmem.Store) (err error) {
 	return
 }
 
-func (s *Persistent) StoreValue(userId, key, value string) error {
+func (s *Persistent) StoreValue(userID, key, value string) error {
 	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func (s *Persistent) StoreValue(userId, key, value string) error {
 		_ = writer.Flush()
 	}()
 
-	if _, err = writer.WriteString(fmt.Sprintf("%s %s %s\n", key, value, userId)); err != nil {
+	if _, err = writer.WriteString(fmt.Sprintf("%s %s %s\n", key, value, userID)); err != nil {
 		return err
 	}
 
