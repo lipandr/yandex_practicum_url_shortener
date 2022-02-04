@@ -2,11 +2,13 @@ package inmem
 
 import (
 	"errors"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"strconv"
 )
 
 type Store struct {
-	data map[string]string
+	globalStore map[string]string
+	userStore   map[string][]string
 }
 
 var (
@@ -16,7 +18,8 @@ var (
 
 func NewStorage() *Store {
 	return &Store{
-		data: make(map[string]string),
+		globalStore: make(map[string]string),
+		userStore:   make(map[string][]string),
 	}
 }
 
@@ -24,29 +27,41 @@ func (s *Store) Get(key string) (string, error) {
 	if key == "" {
 		return "", errKeyNotSpecified
 	}
-	if value, ok := s.data[key]; ok {
+	if value, ok := s.globalStore[key]; ok {
 		return value, nil
 	}
 	return "", errKeyNotFound
 }
 
-func (s *Store) GetAllKeys() (map[string]string, error) {
-	res := s.data
-	if len(res) == 0 {
-		return nil, errKeyNotFound
+func (s *Store) GetAllUserKeys(uid string) map[string]string {
+	k := make(map[string]string)
+
+	if _, ok := s.userStore[uid]; ok {
+		for _, seqList := range s.userStore[uid] {
+			// TODO почему не сработал закомменченный метод?
+			//if seq, err := s.Get(seqList); err != nil {
+			//	k[seqList] = seq
+			//	fmt.Println("seq:", seq)
+			//}
+			if seq, ok := s.globalStore[seqList]; ok {
+				k[seqList] = seq
+			}
+		}
 	}
-	return res, nil
+
+	return k
 }
 
-func (s *Store) Put(key, value string) error {
-	if key == "" {
+func (s *Store) Put(r types.ShortenRecord) error {
+	if r.Key == "" {
 		return errKeyNotSpecified
 	}
-	s.data[key] = value
+	s.globalStore[r.Key] = r.Value
+	s.userStore[r.UserID] = append(s.userStore[r.UserID], r.Key)
 
 	return nil
 }
 
 func (s *Store) GetCurrentSeq() string {
-	return strconv.Itoa(len(s.data) + 1)
+	return strconv.Itoa(len(s.globalStore) + 1)
 }

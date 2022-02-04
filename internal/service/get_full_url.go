@@ -2,9 +2,9 @@ package service
 
 import "errors"
 
-func (svc *service) GetFullURL(userID, key string) (string, error) {
-	if us, ok := svc.store[userID]; ok {
-		res, err := us.Get(key)
+func (svc *service) GetFullURL(key string) (string, error) {
+	if svc.inMem != nil {
+		res, err := svc.inMem.Get(key)
 		if err != nil {
 			return "", err
 		}
@@ -13,11 +13,10 @@ func (svc *service) GetFullURL(userID, key string) (string, error) {
 	return "", errors.New("not found")
 }
 
-func (svc *service) UsersURLs(userID string) (map[string]string, error) {
-	res, err := svc.store[userID].GetAllKeys()
-	if err != nil {
-		return nil, err
+func (svc *service) UsersURLs(userID string) map[string]string {
+	if svc.inMem != nil {
+		return svc.inMem.GetAllUserKeys(userID)
 	}
 
-	return res, nil
+	return map[string]string{}
 }

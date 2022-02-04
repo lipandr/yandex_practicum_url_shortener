@@ -2,12 +2,14 @@ package app
 
 import (
 	"fmt"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"io/ioutil"
 	"net/http"
 )
 
 func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value("userID").(string)
+	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
+
 	value, err := ioutil.ReadAll(r.Body)
 	defer func() { _ = r.Body.Close() }()
 
@@ -16,7 +18,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	url := string(value)
-	key, err := a.svc.EncodeURL(userID, url)
+	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

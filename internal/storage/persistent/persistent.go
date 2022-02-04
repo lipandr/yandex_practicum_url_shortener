@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"os"
 	"strings"
 )
@@ -23,7 +24,7 @@ func NewStorage(storagePath string) (*Persistent, error) {
 	}, nil
 }
 
-func (s *Persistent) LoadURLsFromFile(ss map[string]*inmem.Store) (err error) {
+func (s *Persistent) LoadURLsFromFile(m *inmem.Store) (err error) {
 	file, err := os.OpenFile(s.fileStoragePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		return
@@ -40,19 +41,21 @@ func (s *Persistent) LoadURLsFromFile(ss map[string]*inmem.Store) (err error) {
 		line := scanner.Text()
 		data := strings.Split(line, " ")
 
-		if ss[data[2]] == nil {
-			ss[data[2]] = inmem.NewStorage()
+		r := types.ShortenRecord{
+			UserID: data[0],
+			Key:    data[1],
+			Value:  data[2],
 		}
 
-		if err := ss[data[2]].Put(data[0], data[1]); err != nil {
+		if err := m.Put(r); err != nil {
 			return err
 		}
 	}
 	return
 }
 
-func (s *Persistent) StoreValue(userId, key, value string) error {
-	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
+func (s *Persistent) StoreValue(r types.ShortenRecord) error {
+	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
 	if err != nil {
 		return err
 	}
@@ -66,9 +69,9 @@ func (s *Persistent) StoreValue(userId, key, value string) error {
 		_ = writer.Flush()
 	}()
 
-	if _, err = writer.WriteString(fmt.Sprintf("%s %s %s\n", key, value, userId)); err != nil {
+	if _, err = writer.WriteString(
+		fmt.Sprintf("%s %s %s\n", r.UserID, r.Key, r.Value)); err != nil {
 		return err
 	}
-
 	return nil
 }

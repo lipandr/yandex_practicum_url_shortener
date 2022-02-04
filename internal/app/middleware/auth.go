@@ -6,10 +6,9 @@ import (
 	"crypto/cipher"
 	"encoding/hex"
 	"github.com/google/uuid"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
 )
-
-const cookieName = "userID"
 
 var (
 	key = []byte{193, 175, 17, 153, 220, 178, 229, 188, 18, 205, 215, 225, 202,
@@ -19,28 +18,28 @@ var (
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId := uuid.NewString()
+		userID := uuid.NewString()
 		var isExistedUser bool
-		if ic, err := r.Cookie(cookieName); err == nil {
+		if ic, err := r.Cookie(string(types.UserIDSessionKey)); err == nil {
 			if dc, err := decrypt(ic.Value); err == nil {
-				userId = dc
+				userID = dc
 				isExistedUser = true
 			}
 		}
 		if !isExistedUser {
-			ec, err := encrypt(userId)
+			ec, err := encrypt(userID)
 			if err != nil {
 				http.Error(w, "Internal server error", 500)
 			}
 			oc := &http.Cookie{
-				Name:  cookieName,
+				Name:  string(types.UserIDSessionKey),
 				Value: ec,
 				Path:  `/`,
 			}
 			http.SetCookie(w, oc)
 		}
 
-		ctx := context.WithValue(r.Context(), cookieName, userId)
+		ctx := context.WithValue(r.Context(), types.UserIDSessionKey, types.Session{UserID: userID})
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
