@@ -3,8 +3,8 @@ package service
 import "errors"
 
 func (svc *service) GetFullURL(userID, key string) (string, error) {
-	if us, ok := svc.store[userID]; ok {
-		res, err := us.Get(key)
+	if svc.store[userID] != nil {
+		res, err := svc.store[userID].Get(key)
 		if err != nil {
 			return "", err
 		}
