@@ -9,6 +9,7 @@ import (
 
 func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
+
 	value, err := ioutil.ReadAll(r.Body)
 	defer func() { _ = r.Body.Close() }()
 
