@@ -14,6 +14,7 @@ type Application interface {
 	EncodeURL(w http.ResponseWriter, r *http.Request)
 	JSONEncodeURL(w http.ResponseWriter, r *http.Request)
 	DecodeURL(w http.ResponseWriter, r *http.Request)
+	DBPing(w http.ResponseWriter, r *http.Request)
 	DefaultHandler(w http.ResponseWriter, r *http.Request)
 }
 
@@ -35,6 +36,7 @@ func (a *application) Run() error {
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/user/urls", a.UserURLs).Methods(http.MethodGet)
+	r.HandleFunc("/ping", a.DBPing).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
 	return http.ListenAndServe(a.cfg.ServerAddress, r)
