@@ -7,3 +7,9 @@ type Session struct {
 type SessionKey string
 
 const UserIDSessionKey SessionKey = "userID"
+
+type ShortenRecord struct {
+	UserID string
+	Key    string
+	Value  string
+}

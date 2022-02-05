@@ -12,27 +12,30 @@ type Service interface {
 }
 
 type service struct {
-	store      map[string]*inmem.Store
+	inMem      *inmem.Store
 	persistent *persistent.Persistent
 }
 
 func NewService(storagePath string) (*service, error) {
+	inMem := inmem.NewStorage()
+
+	//a := make([]*ShortenRecord, 0)
+
 	var p *persistent.Persistent
-	ss := make(map[string]*inmem.Store)
 
 	if storagePath != "" {
 		p, err := persistent.NewStorage(storagePath)
 		if err != nil {
 			return nil, err
 		}
-		err = p.LoadURLsFromFile(ss)
+		err = p.LoadURLsFromFile(inMem)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	return &service{
-		store:      ss,
+		inMem:      inMem,
 		persistent: p,
 	}, nil
 }

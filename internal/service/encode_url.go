@@ -5,6 +5,7 @@ import (
 )
 
 func (svc *service) EncodeURL(userID, url string) (string, error) {
+
 	if svc.store[userID] == nil {
 		svc.store[userID] = inmem.NewStorage()
 	}
