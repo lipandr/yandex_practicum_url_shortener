@@ -2,16 +2,14 @@ package app
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
 )
 
 func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
-	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 	vars := mux.Vars(r)
 	key := vars["key"]
 
-	url, err := a.svc.GetFullURL(session.UserID, key)
+	url, err := a.svc.GetFullURL(key)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

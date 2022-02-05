@@ -2,9 +2,9 @@ package service
 
 import "errors"
 
-func (svc *service) GetFullURL(userID, key string) (string, error) {
-	if svc.store[userID] != nil {
-		res, err := svc.store[userID].Get(key)
+func (svc *service) GetFullURL(key string) (string, error) {
+	if svc.inMem != nil {
+		res, err := svc.inMem.Get(key)
 		if err != nil {
 			return "", err
 		}
@@ -14,8 +14,9 @@ func (svc *service) GetFullURL(userID, key string) (string, error) {
 }
 
 func (svc *service) UsersURLs(userID string) map[string]string {
-	if svc.store[userID] != nil {
-		return svc.store[userID].GetAllKeys()
+	if svc.inMem != nil {
+		return svc.inMem.GetAllUserKeys(userID)
 	}
+
 	return map[string]string{}
 }

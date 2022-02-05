@@ -55,7 +55,7 @@ func (s *Persistent) LoadURLsFromFile(m *inmem.Store) (err error) {
 }
 
 func (s *Persistent) StoreValue(r types.ShortenRecord) error {
-	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
+	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
 	if err != nil {
 		return err
 	}
@@ -73,6 +73,5 @@ func (s *Persistent) StoreValue(r types.ShortenRecord) error {
 		fmt.Sprintf("%s %s %s\n", r.UserID, r.Key, r.Value)); err != nil {
 		return err
 	}
-
 	return nil
 }

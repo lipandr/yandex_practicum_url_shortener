@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	GetFullURL(userID, key string) (string, error)
+	GetFullURL(key string) (string, error)
 	EncodeURL(userID, url string) (string, error)
 	UsersURLs(userID string) map[string]string
 }
@@ -17,21 +17,20 @@ type service struct {
 }
 
 func NewService(storagePath string) (*service, error) {
+	var p *persistent.Persistent
 	inMem := inmem.NewStorage()
 
-	//a := make([]*ShortenRecord, 0)
-
-	var p *persistent.Persistent
-
 	if storagePath != "" {
-		p, err := persistent.NewStorage(storagePath)
+		n, err := persistent.NewStorage(storagePath)
 		if err != nil {
 			return nil, err
 		}
-		err = p.LoadURLsFromFile(inMem)
+		err = n.LoadURLsFromFile(inMem)
 		if err != nil {
 			return nil, err
 		}
+		// TODO Check here
+		p = n
 	}
 
 	return &service{
