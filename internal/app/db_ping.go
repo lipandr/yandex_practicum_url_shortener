@@ -2,22 +2,14 @@ package app
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/xo/dburl"
 	"net/http"
 	"time"
 )
 
-const (
-	host   = "localhost"
-	port   = 5432
-	dbname = "urlshorten"
-)
-
 func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", host, port, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := dburl.Open(a.cfg.DatabaseDsn)
 	if err != nil {
 		panic(err)
 	}
