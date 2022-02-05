@@ -2,14 +2,14 @@ package app
 
 import (
 	"context"
+	"database/sql"
 	_ "github.com/lib/pq"
-	"github.com/xo/dburl"
 	"net/http"
 	"time"
 )
 
 func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
-	db, err := dburl.Open(a.cfg.DatabaseDsn)
+	db, err := sql.Open("postgres", a.cfg.DatabaseDsn)
 	if err != nil {
 		panic(err)
 	}
