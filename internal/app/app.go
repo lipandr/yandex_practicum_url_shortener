@@ -32,11 +32,11 @@ func (a *application) Run() error {
 
 	r.Use(middleware.GzipMiddleware, middleware.AuthMiddleware)
 
-	r.HandleFunc("/ping", a.DBPing).Methods(http.MethodGet)
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
-	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
+	r.HandleFunc("/ping", a.DBPing).Methods(http.MethodGet)
 	r.HandleFunc("/user/urls", a.UserURLs).Methods(http.MethodGet)
+	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
 	return http.ListenAndServe(a.cfg.ServerAddress, r)

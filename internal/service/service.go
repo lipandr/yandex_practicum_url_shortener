@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
 )
@@ -14,6 +15,16 @@ type Service interface {
 type service struct {
 	inMem      *inmem.Store
 	persistent *persistent.Persistent
+}
+
+type dBService struct {
+	db *sql.DB
+}
+
+func NewDBService(db *sql.DB) (*dBService, error) {
+	return &dBService{
+		db: db,
+	}, nil
 }
 
 func NewService(storagePath string) (*service, error) {
