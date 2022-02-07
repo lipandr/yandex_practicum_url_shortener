@@ -1,10 +1,14 @@
 package types
 
+import "errors"
+
 type Session struct {
 	UserID string
 }
 
 type SessionKey string
+
+var ErrKeyExists = errors.New("already shorten")
 
 const UserIDSessionKey SessionKey = "userID"
 

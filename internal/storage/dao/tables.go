@@ -9,12 +9,4 @@ CREATE TABLE IF NOT EXISTS url
 	created_by text
 );
 `
-
-//	UserTable = `
-//CREATE TABLE IF NOT EXISTS "user"
-//(
-//    user_id uuid PRIMARY KEY,
-//    url_id bigint
-//);
-//`
 )

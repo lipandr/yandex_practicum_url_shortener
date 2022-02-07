@@ -17,14 +17,21 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	status := http.StatusCreated
 	url := string(value)
+
 	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		if err == types.ErrKeyExists {
+			status = http.StatusConflict
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(status)
 	_, err = w.Write([]byte(fmt.Sprintf("%s/%s", a.cfg.BaseURL, key)))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"strconv"
 )
 
@@ -21,18 +22,25 @@ func (svc dBService) GetFullURL(key string) (string, error) {
 func (svc dBService) EncodeURL(userID, url string) (string, error) {
 	var id int64
 
-	_, err := svc.db.Exec("INSERT INTO url (original, created_by) VALUES ($1, $2);", url, userID)
-	if err != nil {
-		return "", fmt.Errorf("addURL: %v", err)
-	}
-
 	row := svc.db.QueryRow("SELECT url_id FROM url WHERE original = ($1);", url)
-	err = row.Scan(&id)
+	err := row.Scan(&id)
 	if err != nil {
-		return "", fmt.Errorf("URL ID Error: %v", err)
+		_, err := svc.db.Exec("INSERT INTO url (original, created_by) VALUES ($1, $2);", url, userID)
+		if err != nil {
+			fmt.Printf("URL exsists: %v\n", err)
+			return "", fmt.Errorf("addURL: %v", err)
+		}
+
+		row := svc.db.QueryRow("SELECT url_id FROM url WHERE original = ($1);", url)
+		err = row.Scan(&id)
+		if err != nil {
+			return "", fmt.Errorf("URL ID Error: %v", err)
+		}
+
+		return strconv.FormatInt(id, 10), nil
 	}
 
-	return strconv.FormatInt(id, 10), nil
+	return strconv.FormatInt(id, 10), types.ErrKeyExists
 }
 
 func (svc dBService) UsersURLs(userID string) map[string]string {
