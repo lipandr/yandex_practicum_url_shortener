@@ -36,16 +36,21 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	status := http.StatusCreated
 	var url = req.URL
 
 	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		if err == types.ErrKeyExists {
+			status = http.StatusConflict
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(status)
 	res := APIJSONResponse{
 		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),
 	}
