@@ -33,6 +33,7 @@ func (a *application) Run() error {
 	r.Use(middleware.GzipMiddleware, middleware.AuthMiddleware)
 
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
+	r.HandleFunc("/api/shorten/batch", a.Batch).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/ping", a.DBPing).Methods(http.MethodGet)
 	r.HandleFunc("/user/urls", a.UserURLs).Methods(http.MethodGet)
