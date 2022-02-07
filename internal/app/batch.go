@@ -43,7 +43,8 @@ func (a *application) Batch(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		resp = append(resp, BatchResponse{v.CID, s})
+		out := fmt.Sprintf("%s/%s", a.cfg.BaseURL, s)
+		resp = append(resp, BatchResponse{v.CID, out})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
