@@ -8,11 +8,15 @@ import (
 
 func (svc dBService) GetFullURL(key string) (string, error) {
 	var orig string
+	var isDeleted bool
 
-	row := svc.db.QueryRow("SELECT original FROM url WHERE url_id = ($1);", key)
-	err := row.Scan(&orig)
+	row := svc.db.QueryRow("SELECT original, is_deleted FROM url WHERE url_id = ($1);", key)
+	err := row.Scan(&orig, &isDeleted)
 	if err != nil {
 		return "", fmt.Errorf("original URL Error: %v", err)
+	}
+	if isDeleted {
+		return "", types.ErrKeyDeleted
 	}
 
 	return orig, nil
@@ -21,13 +25,13 @@ func (svc dBService) GetFullURL(key string) (string, error) {
 
 func (svc dBService) EncodeURL(userID, url string) (string, error) {
 	var id int64
+	var isDeleted bool
 
-	row := svc.db.QueryRow("SELECT url_id FROM url WHERE original = ($1);", url)
-	err := row.Scan(&id)
+	row := svc.db.QueryRow("SELECT url_id, is_deleted FROM url WHERE original = ($1);", url)
+	err := row.Scan(&id, &isDeleted)
 	if err != nil {
 		_, err := svc.db.Exec("INSERT INTO url (original, created_by) VALUES ($1, $2);", url, userID)
 		if err != nil {
-			fmt.Printf("URL exsists: %v\n", err)
 			return "", fmt.Errorf("addURL: %v", err)
 		}
 
@@ -40,13 +44,22 @@ func (svc dBService) EncodeURL(userID, url string) (string, error) {
 		return strconv.FormatInt(id, 10), nil
 	}
 
+	if isDeleted {
+		query := "UPDATE url SET created_by = ($1), is_deleted=false WHERE url_id = ($2);"
+		_, err := svc.db.Exec(query, userID, id)
+		if err != nil {
+			return "", fmt.Errorf("addURL: %v", err)
+		}
+		return strconv.FormatInt(id, 10), nil
+	}
 	return strconv.FormatInt(id, 10), types.ErrKeyExists
 }
 
 func (svc dBService) UsersURLs(userID string) map[string]string {
 	urls := make(map[string]string)
 
-	rows, err := svc.db.Query("SELECT url_id, original from url where created_by = ($1);", userID)
+	query := "SELECT url_id, original from url where created_by = ($1) AND is_deleted=false;"
+	rows, err := svc.db.Query(query, userID)
 	if err != nil {
 		return nil
 	}
@@ -72,4 +85,14 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 	}
 
 	return urls
+}
+
+func (svc *dBService) DeleteURLS(userID string, url string) {
+	urlID, _ := strconv.Atoi(url)
+
+	query := "UPDATE url SET is_deleted=true WHERE url_id = ($1) AND created_by = ($2);"
+	_, err := svc.db.Exec(query, urlID, userID)
+	if err != nil {
+		fmt.Printf("URL exsists: %v\n", err)
+	}
 }
