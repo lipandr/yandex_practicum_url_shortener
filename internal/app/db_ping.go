@@ -19,7 +19,7 @@ func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	ctx := r.Context()
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	if err = db.PingContext(ctx); err != nil {

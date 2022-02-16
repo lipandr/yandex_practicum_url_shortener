@@ -38,11 +38,6 @@ func (s *Store) GetAllUserKeys(uid string) map[string]string {
 
 	if _, ok := s.userStore[uid]; ok {
 		for _, seqList := range s.userStore[uid] {
-			// TODO почему не сработал закомменченный метод?
-			//if seq, err := s.Get(seqList); err != nil {
-			//	k[seqList] = seq
-			//	fmt.Println("seq:", seq)
-			//}
 			if seq, ok := s.globalStore[seqList]; ok {
 				k[seqList] = seq
 			}

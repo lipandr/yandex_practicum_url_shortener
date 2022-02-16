@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"io/ioutil"
@@ -23,7 +24,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 
 	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
-		if err == types.ErrKeyExists {
+		if errors.Is(err, types.ErrKeyExists) {
 			status = http.StatusConflict
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

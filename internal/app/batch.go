@@ -27,7 +27,7 @@ func (a *application) Batch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var batch = make([]BatchRequest, 0)
+	var batch []BatchRequest
 	err = json.Unmarshal(body, &batch)
 	if err != nil {
 		fmt.Printf("Not Decoded: %v\n", err)
@@ -35,8 +35,8 @@ func (a *application) Batch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var resp = make([]BatchResponse, 0)
-	for _, v := range batch {
+	var resp = make([]BatchResponse, len(batch))
+	for i, v := range batch {
 		s, err := a.svc.EncodeURL(session.UserID, v.OriginalURL)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -44,7 +44,7 @@ func (a *application) Batch(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out := fmt.Sprintf("%s/%s", a.cfg.BaseURL, s)
-		resp = append(resp, BatchResponse{v.CID, out})
+		resp[i] = BatchResponse{v.CID, out}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

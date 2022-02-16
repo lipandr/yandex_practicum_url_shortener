@@ -40,7 +40,6 @@ func NewService(storagePath string) (*service, error) {
 		if err != nil {
 			return nil, err
 		}
-		// TODO Check here
 		p = n
 	}
 

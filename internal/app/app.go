@@ -36,7 +36,7 @@ func (a *application) Run() error {
 	r.HandleFunc("/api/shorten/batch", a.Batch).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/ping", a.DBPing).Methods(http.MethodGet)
-	r.HandleFunc("/user/urls", a.UserURLs).Methods(http.MethodGet)
+	r.HandleFunc("/api/user/urls", a.UserURLs).Methods(http.MethodGet)
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
 	r.HandleFunc("/", a.DefaultHandler)
 
