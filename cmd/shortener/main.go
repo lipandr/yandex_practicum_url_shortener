@@ -6,6 +6,7 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/dao"
 	"log"
 )
 
@@ -18,11 +19,17 @@ func main() {
 	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "Server address")
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL")
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "File Storage Path")
+	flag.StringVar(&cfg.DatabaseDsn, "d", cfg.DatabaseDsn, "Data base path string")
 	flag.Parse()
 
-	svc, err := service.NewService(cfg.FileStoragePath)
+	db, err := dao.NewDB(cfg.DatabaseDsn)
 	if err != nil {
-		log.Fatal("Can't start application")
+		log.Fatal("Can't start application:", err)
+	}
+
+	svc, err := service.NewDBService(db)
+	if err != nil {
+		log.Fatal("Can't start application:", err)
 	}
 	urlApp := app.NewApp(cfg, svc)
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
 )
 
@@ -24,6 +25,7 @@ func (r APIJSONRequest) Validate() error {
 
 func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	var req APIJSONRequest
+	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -34,21 +36,26 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	status := http.StatusCreated
 	var url = req.URL
 
-	key, err := a.svc.EncodeURL(url)
+	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		if errors.Is(err, types.ErrKeyExists) {
+			status = http.StatusConflict
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(status)
 	res := APIJSONResponse{
 		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),
 	}
-	err = json.NewEncoder(w).Encode(res)
 
+	err = json.NewEncoder(w).Encode(res)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

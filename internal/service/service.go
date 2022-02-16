@@ -1,33 +1,50 @@
 package service
 
 import (
-	store "github.com/lipandr/yandex_practicum_url_shortener/internal/storage"
+	"database/sql"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
 )
 
 type Service interface {
 	GetFullURL(key string) (string, error)
-	EncodeURL(url string) (string, error)
+	EncodeURL(userID, url string) (string, error)
+	UsersURLs(userID string) map[string]string
 }
 
 type service struct {
-	store      store.Repository
+	inMem      *inmem.Store
 	persistent *persistent.Persistent
 }
 
+type dBService struct {
+	db *sql.DB
+}
+
+func NewDBService(db *sql.DB) (*dBService, error) {
+	return &dBService{
+		db: db,
+	}, nil
+}
+
 func NewService(storagePath string) (*service, error) {
-	p, err := persistent.NewStorage(storagePath)
-	if err != nil {
-		return nil, err
+	var p *persistent.Persistent
+	inMem := inmem.NewStorage()
+
+	if storagePath != "" {
+		n, err := persistent.NewStorage(storagePath)
+		if err != nil {
+			return nil, err
+		}
+		err = n.LoadURLsFromFile(inMem)
+		if err != nil {
+			return nil, err
+		}
+		p = n
 	}
-	im := inmem.NewStorage()
-	err = p.LoadURLsFromFile(im)
-	if err != nil {
-		return nil, err
-	}
+
 	return &service{
-		store:      im,
+		inMem:      inMem,
 		persistent: p,
 	}, nil
 }

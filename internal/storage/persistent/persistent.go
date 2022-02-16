@@ -3,7 +3,9 @@ package persistent
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"os"
 	"strings"
 )
@@ -14,7 +16,7 @@ type Persistent struct {
 
 func NewStorage(storagePath string) (*Persistent, error) {
 	if storagePath == "" {
-		return nil, errors.New("No path specified")
+		return nil, errors.New("no path specified")
 	}
 
 	return &Persistent{
@@ -22,7 +24,7 @@ func NewStorage(storagePath string) (*Persistent, error) {
 	}, nil
 }
 
-func (s *Persistent) LoadURLsFromFile(inMemory *inmem.Store) (err error) {
+func (s *Persistent) LoadURLsFromFile(m *inmem.Store) (err error) {
 	file, err := os.OpenFile(s.fileStoragePath, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		return
@@ -39,15 +41,21 @@ func (s *Persistent) LoadURLsFromFile(inMemory *inmem.Store) (err error) {
 		line := scanner.Text()
 		data := strings.Split(line, " ")
 
-		if err := inMemory.Put(data[0], data[1]); err != nil {
+		r := types.ShortenRecord{
+			UserID: data[0],
+			Key:    data[1],
+			Value:  data[2],
+		}
+
+		if err := m.Put(r); err != nil {
 			return err
 		}
 	}
 	return
 }
 
-func (s *Persistent) StoreValue(key, value string) error {
-	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0777)
+func (s *Persistent) StoreValue(r types.ShortenRecord) error {
+	file, err := os.OpenFile(s.fileStoragePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0664)
 	if err != nil {
 		return err
 	}
@@ -61,7 +69,8 @@ func (s *Persistent) StoreValue(key, value string) error {
 		_ = writer.Flush()
 	}()
 
-	if _, err = writer.WriteString(key + " " + value + "\n"); err != nil {
+	if _, err = writer.WriteString(
+		fmt.Sprintf("%s %s %s\n", r.UserID, r.Key, r.Value)); err != nil {
 		return err
 	}
 	return nil

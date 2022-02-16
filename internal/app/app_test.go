@@ -2,10 +2,13 @@ package app
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -13,12 +16,13 @@ import (
 )
 
 func TestHandlers(t *testing.T) {
+	uid := uuid.NewString()
+
 	cfg := config.Config{
-		ServerAddress:   "localhost:8080",
-		BaseURL:         "http://localhost:8080",
-		FileStoragePath: "temp.txt",
+		ServerAddress: "localhost:8080",
+		BaseURL:       "http://localhost:8080",
 	}
-	svc, err := service.NewService(cfg.FileStoragePath)
+	svc, err := service.NewService("")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,6 +129,9 @@ func TestHandlers(t *testing.T) {
 			}
 			request := httptest.NewRequest(tt.method, fmt.Sprintf("/%s", tt.target), bytes.NewReader([]byte(tt.body)))
 			request = mux.SetURLVars(request, vars)
+
+			ctx := context.WithValue(request.Context(), types.UserIDSessionKey, types.Session{UserID: uid})
+			request = request.WithContext(ctx)
 
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(tt.handler)
