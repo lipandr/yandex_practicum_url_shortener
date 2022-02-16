@@ -52,6 +52,7 @@ func (svc dBService) EncodeURL(userID, url string) (string, error) {
 		}
 		return strconv.FormatInt(id, 10), nil
 	}
+
 	return strconv.FormatInt(id, 10), types.ErrKeyExists
 }
 
