@@ -20,7 +20,7 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 
 	s := strings.Split(strings.Trim(string(value), "[ ]"), ",")
 	for i := 0; i < len(s); i++ {
-		s[i] = strings.Trim(s[i], " \"\"")
+		s[i] = strings.Trim(s[i], " \" \"")
 
 		a.svc.DeleteURLS(session.UserID, s[i])
 	}
