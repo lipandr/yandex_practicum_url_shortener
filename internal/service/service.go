@@ -18,6 +18,9 @@ type service struct {
 	persistent *persistent.Persistent
 }
 
+func (svc *service) DeleteURLS(userID string, url string) {
+}
+
 type dBService struct {
 	db *sql.DB
 }
