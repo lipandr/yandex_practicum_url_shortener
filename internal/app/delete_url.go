@@ -1,28 +1,26 @@
 package app
 
 import (
+	"encoding/json"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
-	"io/ioutil"
 	"net/http"
-	"strings"
 )
 
 func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
-	value, err := ioutil.ReadAll(r.Body)
-	defer func() { _ = r.Body.Close() }()
+	var IDs []string
 
-	if err != nil {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&IDs); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	s := strings.Split(strings.Trim(string(value), "[ ]"), ",")
-	for i := 0; i < len(s); i++ {
-		s[i] = strings.Trim(s[i], " \"")
-
-		a.svc.DeleteURLS(session.UserID, s[i])
+	for i := 0; i < len(IDs); i++ {
+		a.svc.DeleteURLS(session.UserID, IDs[i])
 	}
 
 	w.WriteHeader(http.StatusAccepted)
