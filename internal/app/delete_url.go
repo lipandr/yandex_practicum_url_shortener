@@ -22,10 +22,9 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	numWorkers := 3
 	numJobs := len(IDs)
 	jobs := make(chan job, numJobs)
-	results := make(chan job, numJobs)
 
 	for w := 0; w < numWorkers; w++ {
-		go a.worker(jobs, results)
+		go a.worker(jobs)
 	}
 
 	for j := 0; j < numJobs; j++ {
@@ -37,17 +36,12 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	}
 	close(jobs)
 
-	for a := 0; a < numJobs; a++ {
-		<-results
-	}
-
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func (a *application) worker(jobs <-chan job, results chan<- job) {
+func (a *application) worker(jobs <-chan job) {
 	for j := range jobs {
 		a.svc.DeleteURLS(j.userID, j.urlID)
-		results <- j
 	}
 }
 
