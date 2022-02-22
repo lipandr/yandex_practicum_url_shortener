@@ -21,7 +21,9 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 
 	numWorkers := 3
 	numJobs := len(IDs)
+
 	jobs := make(chan job, numJobs)
+	defer close(jobs)
 
 	for w := 0; w < numWorkers; w++ {
 		go a.worker(jobs)
@@ -34,7 +36,6 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 		}
 		jobs <- item
 	}
-	close(jobs)
 
 	w.WriteHeader(http.StatusAccepted)
 }
