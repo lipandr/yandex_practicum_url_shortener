@@ -89,10 +89,13 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 }
 
 func (svc *dBService) DeleteURLS(userID string, url string) {
-	urlID, _ := strconv.Atoi(url)
+	urlID, err := strconv.Atoi(url)
+	if err != nil {
+		return
+	}
 
 	query := "UPDATE url SET is_deleted=true WHERE url_id = ($1) AND created_by = ($2);"
-	_, err := svc.db.Exec(query, urlID, userID)
+	_, err = svc.db.Exec(query, urlID, userID)
 	if err != nil {
 		fmt.Printf("URL exsists: %v\n", err)
 	}
