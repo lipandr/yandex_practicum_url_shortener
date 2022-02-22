@@ -19,9 +19,39 @@ func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for i := 0; i < len(IDs); i++ {
-		a.svc.DeleteURLS(session.UserID, IDs[i])
+	numWorkers := 3
+	numJobs := len(IDs)
+	jobs := make(chan job, numJobs)
+	results := make(chan job, numJobs)
+
+	for w := 0; w < numWorkers; w++ {
+		go a.worker(jobs, results)
+	}
+
+	for j := 0; j < numJobs; j++ {
+		item := job{
+			userID: session.UserID,
+			urlID:  IDs[j],
+		}
+		jobs <- item
+	}
+	close(jobs)
+
+	for a := 0; a < numJobs; a++ {
+		<-results
 	}
 
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func (a *application) worker(jobs <-chan job, results chan<- job) {
+	for j := range jobs {
+		a.svc.DeleteURLS(j.userID, j.urlID)
+		results <- j
+	}
+}
+
+type job struct {
+	userID string
+	urlID  string
 }
