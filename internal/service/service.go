@@ -10,11 +10,15 @@ type Service interface {
 	GetFullURL(key string) (string, error)
 	EncodeURL(userID, url string) (string, error)
 	UsersURLs(userID string) map[string]string
+	DeleteURLS(userID string, url string)
 }
 
 type service struct {
 	inMem      *inmem.Store
 	persistent *persistent.Persistent
+}
+
+func (svc *service) DeleteURLS(userID string, url string) {
 }
 
 type dBService struct {

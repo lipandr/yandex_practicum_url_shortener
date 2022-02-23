@@ -9,6 +9,7 @@ type Session struct {
 type SessionKey string
 
 var ErrKeyExists = errors.New("already shorten")
+var ErrKeyDeleted = errors.New("shorten url was deleted")
 
 const UserIDSessionKey SessionKey = "userID"
 
