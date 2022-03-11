@@ -2,12 +2,14 @@ package main
 
 import (
 	"flag"
+	"log"
+	_ "net/http/pprof"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/dao"
-	"log"
 )
 
 func main() {

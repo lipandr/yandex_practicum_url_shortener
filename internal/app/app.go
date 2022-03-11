@@ -5,7 +5,6 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app/middleware"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
-
 	"net/http"
 )
 
@@ -31,7 +30,7 @@ func (a *application) Run() error {
 	r := mux.NewRouter()
 
 	r.Use(middleware.GzipMiddleware, middleware.AuthMiddleware)
-
+	r.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten/batch", a.Batch).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)
@@ -39,6 +38,7 @@ func (a *application) Run() error {
 	r.HandleFunc("/api/user/urls", a.UserURLs).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/urls", a.DeleteURLs).Methods(http.MethodDelete)
 	r.HandleFunc("/{key}", a.DecodeURL).Methods(http.MethodGet)
+
 	r.HandleFunc("/", a.DefaultHandler)
 
 	return http.ListenAndServe(a.cfg.ServerAddress, r)
