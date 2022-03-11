@@ -9,14 +9,17 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// APIJSONRequest структура описывающая json-формат запроса.
 type APIJSONRequest struct {
 	URL string `json:"url"`
 }
 
+// APIJSONResponse структура описывающая json-формат ответа.
 type APIJSONResponse struct {
 	Result string `json:"result"`
 }
 
+// Validate helper-метод для валидации запросов.
 func (r APIJSONRequest) Validate() error {
 	if r.URL == "" {
 		return errors.New("incorrect JSON url")
@@ -25,6 +28,9 @@ func (r APIJSONRequest) Validate() error {
 	return nil
 }
 
+// JSONEncodeURL handler принимающий в теле запроса данные в json-формате.
+// При успешном сокращении URL возвращает HTTP-статус 201 Created.
+// При повторном сокращении URL, сервис возвратит HTTP-статус 409 Conflict.
 func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	var req APIJSONRequest
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)

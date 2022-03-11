@@ -7,6 +7,7 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
 )
 
+// Service интерфейс сервиса приложения.
 type Service interface {
 	GetFullURL(key string) (string, error)
 	EncodeURL(userID, url string) (string, error)
@@ -14,21 +15,25 @@ type Service interface {
 	DeleteURLS(userID string, url string)
 }
 
+// Структура dBService описывающая интерфейс подключения к БД.
 type dBService struct {
 	db *sql.DB
 }
 
+// NewDBService метод-конструктор для dBService.
 func NewDBService(db *sql.DB) (*dBService, error) {
 	return &dBService{
 		db: db,
 	}, nil
 }
 
+// Структура service описывающая хранение информации в памяти и на жестком диске.
 type service struct {
 	inMem      *inmem.Store
 	persistent *persistent.Persistent
 }
 
+// NewService метод-конструктор для service.
 func NewService(storagePath string) (*service, error) {
 	var p *persistent.Persistent
 	inMem := inmem.NewStorage()

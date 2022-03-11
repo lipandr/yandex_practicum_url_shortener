@@ -1,3 +1,4 @@
+// Учебный сервис по сокращению URL yandex-practicum.
 package main
 
 import (

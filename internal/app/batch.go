@@ -9,16 +9,19 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// BatchRequest структура описывающая формат json запрос от клиентов.
 type BatchRequest struct {
 	CID         string `json:"correlation_id"`
 	OriginalURL string `json:"original_url"`
 }
 
+// BatchResponse структура описывающая формат json ответов приложения.
 type BatchResponse struct {
 	CID      string `json:"correlation_id"`
 	ShortURL string `json:"short_url"`
 }
 
+// Batch handler принимающий в теле запроса множество URL для сокращения.
 func (a *application) Batch(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 

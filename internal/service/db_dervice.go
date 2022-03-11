@@ -7,6 +7,7 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// EncodeURL сервис запросов к БД для сокращения URL.
 func (svc *dBService) EncodeURL(userID, url string) (string, error) {
 	var id int64
 	var isDeleted bool
@@ -40,6 +41,7 @@ func (svc *dBService) EncodeURL(userID, url string) (string, error) {
 	return strconv.FormatInt(id, 10), types.ErrKeyExists
 }
 
+// GetFullURL сервис запросов к БД для получения полного URL
 func (svc *dBService) GetFullURL(key string) (string, error) {
 	var orig string
 	var isDeleted bool
@@ -57,6 +59,7 @@ func (svc *dBService) GetFullURL(key string) (string, error) {
 	return orig, nil
 }
 
+// UsersURLs сервис запросов к БД возвращающий список сокращенных пользователем URL.
 func (svc dBService) UsersURLs(userID string) map[string]string {
 	urls := make(map[string]string)
 
@@ -89,6 +92,9 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 	return urls
 }
 
+// DeleteURLS сервис запросов к БД отвечающий за удаление записей.
+// Устанавливает для сокращенного URL значение is_deleted=true.
+// Запись из БД не удаляется.
 func (svc *dBService) DeleteURLS(userID string, url string) {
 	urlID, err := strconv.Atoi(url)
 	if err != nil {

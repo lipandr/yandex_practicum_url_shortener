@@ -10,6 +10,7 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
 )
 
+// Application интерфейс описывающий методы приложения.
 type Application interface {
 	Run() error
 	EncodeURL(w http.ResponseWriter, r *http.Request)
@@ -19,15 +20,18 @@ type Application interface {
 	DefaultHandler(w http.ResponseWriter, r *http.Request)
 }
 
+// Структура Dependency injection приложения.
 type application struct {
 	cfg config.Config
 	svc service.Service
 }
 
+// NewApp метод-конструктор приложения
 func NewApp(cfg config.Config, svc service.Service) Application {
 	return &application{cfg: cfg, svc: svc}
 }
 
+// Run метод запуска приложения
 func (a *application) Run() error {
 	r := mux.NewRouter()
 

@@ -9,6 +9,9 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// EncodeURL handler возвращает URL в сокращенном формате.
+// При успешном сокращении URL возвращает HTTP-статус 201 Created.
+// При повторном сокращении URL, сервис возвратит HTTP-статус 409 Conflict.
 func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 

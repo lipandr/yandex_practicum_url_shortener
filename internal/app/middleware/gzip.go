@@ -15,9 +15,12 @@ type gzipWriter struct {
 }
 
 func (w gzipWriter) Write(b []byte) (int, error) {
+	// w.Writer будет отвечать за gzip-сжатие, поэтому пишем в него.
 	return w.Writer.Write(b)
 }
 
+// GzipMiddleware middleware метод принимающий сжатые данные в теле запроса в формате gzip.
+// Если клиент поддерживает сжатие gzip, возвращает сжатый ответ.
 func GzipMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// gzip Decode
