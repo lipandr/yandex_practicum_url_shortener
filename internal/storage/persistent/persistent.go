@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"os"
 	"strings"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 type Persistent struct {
@@ -51,6 +52,7 @@ func (s *Persistent) LoadURLsFromFile(m *inmem.Store) (err error) {
 			return err
 		}
 	}
+
 	return
 }
 
@@ -64,14 +66,15 @@ func (s *Persistent) StoreValue(r types.ShortenRecord) error {
 		_ = file.Close()
 	}()
 
-	writer := bufio.NewWriter(file)
+	w := bufio.NewWriter(file)
 	defer func() {
-		_ = writer.Flush()
+		_ = w.Flush()
 	}()
 
-	if _, err = writer.WriteString(
+	if _, err = w.WriteString(
 		fmt.Sprintf("%s %s %s\n", r.UserID, r.Key, r.Value)); err != nil {
 		return err
 	}
+
 	return nil
 }

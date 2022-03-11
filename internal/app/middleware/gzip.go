@@ -20,7 +20,6 @@ func (w gzipWriter) Write(b []byte) (int, error) {
 
 func GzipMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		// gzip Decode
 		if strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
 			gz, err := gzip.NewReader(r.Body)
@@ -41,6 +40,7 @@ func GzipMiddleware(next http.Handler) http.Handler {
 			r.Body = ioutil.NopCloser(bytes.NewReader(body))
 			r.ContentLength = int64(len(body))
 		}
+
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 			next.ServeHTTP(w, r)
 			return

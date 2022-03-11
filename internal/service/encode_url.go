@@ -16,6 +16,7 @@ func (svc *service) EncodeURL(userID, url string) (string, error) {
 		Key:    hash,
 		Value:  url,
 	}
+
 	if err := svc.inMem.Put(r); err != nil {
 		return "", err
 	}

@@ -2,9 +2,15 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
+
+type job struct {
+	userID string
+	urlID  string
+}
 
 func (a *application) DeleteURLs(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
@@ -44,9 +50,4 @@ func (a *application) worker(jobs <-chan job) {
 	for j := range jobs {
 		a.svc.DeleteURLS(j.userID, j.urlID)
 	}
-}
-
-type job struct {
-	userID string
-	urlID  string
 }

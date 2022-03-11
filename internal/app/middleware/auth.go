@@ -5,9 +5,11 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
-	"github.com/google/uuid"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/google/uuid"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 var (
@@ -20,23 +22,24 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := uuid.NewString()
 		var isExistedUser bool
-		if ic, err := r.Cookie(string(types.UserIDSessionKey)); err == nil {
-			if dc, err := decrypt(ic.Value); err == nil {
-				userID = dc
+		if c, err := r.Cookie(string(types.UserIDSessionKey)); err == nil {
+			if d, err := decrypt(c.Value); err == nil {
+				userID = d
 				isExistedUser = true
 			}
 		}
+
 		if !isExistedUser {
-			ec, err := encrypt(userID)
+			e, err := encrypt(userID)
 			if err != nil {
 				http.Error(w, "Internal server error", 500)
 			}
-			oc := &http.Cookie{
+			c := &http.Cookie{
 				Name:  string(types.UserIDSessionKey),
-				Value: ec,
+				Value: e,
 				Path:  `/`,
 			}
-			http.SetCookie(w, oc)
+			http.SetCookie(w, c)
 		}
 
 		ctx := context.WithValue(r.Context(), types.UserIDSessionKey, types.Session{UserID: userID})

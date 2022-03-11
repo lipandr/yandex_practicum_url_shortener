@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 type APIJSONRequest struct {
@@ -20,6 +21,7 @@ func (r APIJSONRequest) Validate() error {
 	if r.URL == "" {
 		return errors.New("incorrect JSON url")
 	}
+
 	return nil
 }
 
@@ -31,6 +33,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if err := req.Validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -50,6 +53,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	w.WriteHeader(status)
 	res := APIJSONResponse{
 		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),

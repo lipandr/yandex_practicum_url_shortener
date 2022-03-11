@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/service"
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 func TestHandlers(t *testing.T) {
@@ -22,10 +24,12 @@ func TestHandlers(t *testing.T) {
 		ServerAddress: "localhost:8080",
 		BaseURL:       "http://localhost:8080",
 	}
+
 	svc, err := service.NewService("")
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	app := NewApp(cfg, svc)
 
 	type want struct {
@@ -33,6 +37,7 @@ func TestHandlers(t *testing.T) {
 		response    string
 		contentType string
 	}
+
 	tests := []struct {
 		name    string
 		handler func(w http.ResponseWriter, r *http.Request)
@@ -122,6 +127,7 @@ func TestHandlers(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vars := map[string]string{
@@ -144,10 +150,12 @@ func TestHandlers(t *testing.T) {
 			}
 
 			defer res.Body.Close()
+
 			resBody, err := ioutil.ReadAll(res.Body)
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			if string(resBody) != tt.want.response {
 				t.Errorf("Expected body %s, got %s", tt.want.response, w.Body.String())
 			}

@@ -10,6 +10,7 @@ func (svc *service) GetFullURL(key string) (string, error) {
 		}
 		return res, nil
 	}
+
 	return "", errors.New("not found")
 }
 
@@ -19,4 +20,7 @@ func (svc *service) UsersURLs(userID string) map[string]string {
 	}
 
 	return map[string]string{}
+}
+
+func (svc *service) DeleteURLS(userID string, url string) {
 }

@@ -3,8 +3,9 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 type UserJSON struct {
@@ -28,6 +29,7 @@ func (a *application) UserURLs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	if err := json.NewEncoder(w).Encode(u); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

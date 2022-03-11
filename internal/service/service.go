@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/inmem"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/persistent"
 )
@@ -13,14 +14,6 @@ type Service interface {
 	DeleteURLS(userID string, url string)
 }
 
-type service struct {
-	inMem      *inmem.Store
-	persistent *persistent.Persistent
-}
-
-func (svc *service) DeleteURLS(userID string, url string) {
-}
-
 type dBService struct {
 	db *sql.DB
 }
@@ -29,6 +22,11 @@ func NewDBService(db *sql.DB) (*dBService, error) {
 	return &dBService{
 		db: db,
 	}, nil
+}
+
+type service struct {
+	inMem      *inmem.Store
+	persistent *persistent.Persistent
 }
 
 func NewService(storagePath string) (*service, error) {

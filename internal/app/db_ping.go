@@ -3,9 +3,10 @@ package app
 import (
 	"context"
 	"database/sql"
-	_ "github.com/lib/pq"
 	"net/http"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {

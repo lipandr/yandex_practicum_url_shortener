@@ -2,9 +2,11 @@ package app
 
 import (
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
 func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
@@ -20,5 +22,6 @@ func (a *application) DecodeURL(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
