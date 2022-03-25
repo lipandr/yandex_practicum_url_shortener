@@ -2,28 +2,13 @@ package service
 
 import (
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"strconv"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
-func (svc dBService) GetFullURL(key string) (string, error) {
-	var orig string
-	var isDeleted bool
-
-	row := svc.db.QueryRow("SELECT original, is_deleted FROM url WHERE url_id = ($1);", key)
-	err := row.Scan(&orig, &isDeleted)
-	if err != nil {
-		return "", fmt.Errorf("original URL Error: %v", err)
-	}
-	if isDeleted {
-		return "", types.ErrKeyDeleted
-	}
-
-	return orig, nil
-
-}
-
-func (svc dBService) EncodeURL(userID, url string) (string, error) {
+// EncodeURL сервис запросов к БД для сокращения URL.
+func (svc *dBService) EncodeURL(userID, url string) (string, error) {
 	var id int64
 	var isDeleted bool
 
@@ -45,8 +30,8 @@ func (svc dBService) EncodeURL(userID, url string) (string, error) {
 	}
 
 	if isDeleted {
-		query := "UPDATE url SET created_by = ($1), is_deleted=false WHERE url_id = ($2);"
-		_, err := svc.db.Exec(query, userID, id)
+		q := "UPDATE url SET created_by = ($1), is_deleted=false WHERE url_id = ($2);"
+		_, err := svc.db.Exec(q, userID, id)
 		if err != nil {
 			return "", fmt.Errorf("addURL: %v", err)
 		}
@@ -56,11 +41,30 @@ func (svc dBService) EncodeURL(userID, url string) (string, error) {
 	return strconv.FormatInt(id, 10), types.ErrKeyExists
 }
 
+// GetFullURL сервис запросов к БД для получения полного URL
+func (svc *dBService) GetFullURL(key string) (string, error) {
+	var orig string
+	var isDeleted bool
+
+	row := svc.db.QueryRow("SELECT original, is_deleted FROM url WHERE url_id = ($1);", key)
+	err := row.Scan(&orig, &isDeleted)
+	if err != nil {
+		return "", fmt.Errorf("original URL Error: %v", err)
+	}
+
+	if isDeleted {
+		return "", types.ErrKeyDeleted
+	}
+
+	return orig, nil
+}
+
+// UsersURLs сервис запросов к БД возвращающий список сокращенных пользователем URL.
 func (svc dBService) UsersURLs(userID string) map[string]string {
 	urls := make(map[string]string)
 
-	query := "SELECT url_id, original from url where created_by = ($1) AND is_deleted=false;"
-	rows, err := svc.db.Query(query, userID)
+	q := "SELECT url_id, original from url where created_by = ($1) AND is_deleted=false;"
+	rows, err := svc.db.Query(q, userID)
 	if err != nil {
 		return nil
 	}
@@ -76,8 +80,8 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 		if err != nil {
 			return nil
 		}
-		urls[u] = o
 
+		urls[u] = o
 	}
 
 	err = rows.Err()
@@ -88,14 +92,17 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 	return urls
 }
 
+// DeleteURLS сервис запросов к БД отвечающий за удаление записей.
+// Устанавливает для сокращенного URL значение is_deleted=true.
+// Запись из БД не удаляется.
 func (svc *dBService) DeleteURLS(userID string, url string) {
 	urlID, err := strconv.Atoi(url)
 	if err != nil {
 		return
 	}
 
-	query := "UPDATE url SET is_deleted=true WHERE url_id = ($1) AND created_by = ($2);"
-	_, err = svc.db.Exec(query, urlID, userID)
+	q := "UPDATE url SET is_deleted=true WHERE url_id = ($1) AND created_by = ($2);"
+	_, err = svc.db.Exec(q, urlID, userID)
 	if err != nil {
 		fmt.Printf("URL exsists: %v\n", err)
 	}

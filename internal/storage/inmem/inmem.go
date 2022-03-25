@@ -2,19 +2,20 @@ package inmem
 
 import (
 	"errors"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"strconv"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
+)
+
+var (
+	errKeyNotFound     = errors.New("the key is not found")
+	errKeyNotSpecified = errors.New("the key is not specified")
 )
 
 type Store struct {
 	globalStore map[string]string
 	userStore   map[string][]string
 }
-
-var (
-	errKeyNotFound     = errors.New("the key is not found")
-	errKeyNotSpecified = errors.New("the key is not specified")
-)
 
 func NewStorage() *Store {
 	return &Store{
@@ -27,9 +28,11 @@ func (s *Store) Get(key string) (string, error) {
 	if key == "" {
 		return "", errKeyNotSpecified
 	}
+
 	if value, ok := s.globalStore[key]; ok {
 		return value, nil
 	}
+
 	return "", errKeyNotFound
 }
 
@@ -51,6 +54,7 @@ func (s *Store) Put(r types.ShortenRecord) error {
 	if r.Key == "" {
 		return errKeyNotSpecified
 	}
+
 	s.globalStore[r.Key] = r.Value
 	s.userStore[r.UserID] = append(s.userStore[r.UserID], r.Key)
 

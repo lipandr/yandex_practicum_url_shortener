@@ -4,6 +4,7 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// EncodeURL сервис сохранения URL в память и в файл на диск
 func (svc *service) EncodeURL(userID, url string) (string, error) {
 
 	//if svc.store[userID] == nil {
@@ -16,6 +17,7 @@ func (svc *service) EncodeURL(userID, url string) (string, error) {
 		Key:    hash,
 		Value:  url,
 	}
+
 	if err := svc.inMem.Put(r); err != nil {
 		return "", err
 	}
@@ -30,6 +32,7 @@ func (svc *service) EncodeURL(userID, url string) (string, error) {
 	return hash, nil
 }
 
+// Helper-метод generateHash
 func (svc *service) generateHash() string {
 	return svc.inMem.GetCurrentSeq()
 }

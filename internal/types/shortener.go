@@ -2,16 +2,18 @@ package types
 
 import "errors"
 
-type Session struct {
-	UserID string
-}
+const UserIDSessionKey SessionKey = "userID"
+
+var (
+	ErrKeyExists  = errors.New("already shorten")
+	ErrKeyDeleted = errors.New("shorten url was deleted")
+)
 
 type SessionKey string
 
-var ErrKeyExists = errors.New("already shorten")
-var ErrKeyDeleted = errors.New("shorten url was deleted")
-
-const UserIDSessionKey SessionKey = "userID"
+type Session struct {
+	UserID string
+}
 
 type ShortenRecord struct {
 	UserID string

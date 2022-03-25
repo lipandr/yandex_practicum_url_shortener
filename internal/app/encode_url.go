@@ -3,15 +3,19 @@ package app
 import (
 	"errors"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// EncodeURL handler возвращает URL в сокращенном формате.
+// При успешном сокращении URL возвращает HTTP-статус 201 Created.
+// При повторном сокращении URL, сервис возвратит HTTP-статус 409 Conflict.
 func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
 
-	value, err := ioutil.ReadAll(r.Body)
+	b, err := ioutil.ReadAll(r.Body)
 	defer func() { _ = r.Body.Close() }()
 
 	if err != nil {
@@ -20,7 +24,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	status := http.StatusCreated
-	url := string(value)
+	url := string(b)
 
 	key, err := a.svc.EncodeURL(session.UserID, url)
 	if err != nil {
@@ -33,6 +37,7 @@ func (a *application) EncodeURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(status)
+
 	_, err = w.Write([]byte(fmt.Sprintf("%s/%s", a.cfg.BaseURL, key)))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

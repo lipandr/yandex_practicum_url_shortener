@@ -3,11 +3,15 @@ package app
 import (
 	"context"
 	"database/sql"
-	_ "github.com/lib/pq"
 	"net/http"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
+// DBPing handler проверяет соединение с базой данных.
+// При успешной проверке хендлер возвращает HTTP-статус 200 OK,
+// при неуспешной — 500 Internal Server Error.
 func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("postgres", a.cfg.DatabaseDsn)
 	if err != nil {

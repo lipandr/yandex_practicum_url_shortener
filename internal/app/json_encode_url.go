@@ -4,25 +4,33 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 	"net/http"
+
+	"github.com/lipandr/yandex_practicum_url_shortener/internal/types"
 )
 
+// APIJSONRequest структура описывающая json-формат запроса.
 type APIJSONRequest struct {
 	URL string `json:"url"`
 }
 
+// APIJSONResponse структура описывающая json-формат ответа.
 type APIJSONResponse struct {
 	Result string `json:"result"`
 }
 
+// Validate helper-метод для валидации запросов.
 func (r APIJSONRequest) Validate() error {
 	if r.URL == "" {
 		return errors.New("incorrect JSON url")
 	}
+
 	return nil
 }
 
+// JSONEncodeURL handler принимающий в теле запроса данные в json-формате.
+// При успешном сокращении URL возвращает HTTP-статус 201 Created.
+// При повторном сокращении URL, сервис возвратит HTTP-статус 409 Conflict.
 func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	var req APIJSONRequest
 	session := r.Context().Value(types.UserIDSessionKey).(types.Session)
@@ -31,6 +39,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if err := req.Validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -50,6 +59,7 @@ func (a *application) JSONEncodeURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
 	w.WriteHeader(status)
 	res := APIJSONResponse{
 		Result: fmt.Sprintf("%s/%s", a.cfg.BaseURL, key),
