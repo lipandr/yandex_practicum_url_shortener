@@ -3,6 +3,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	_ "net/http/pprof"
@@ -15,7 +16,17 @@ import (
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/storage/dao"
 )
 
+var (
+	buildVersion = "N/A"
+	buildDate    = "N/A"
+	buildCommit  = "N/A"
+)
+
 func main() {
+	fmt.Println("Build version:", buildVersion)
+	fmt.Println("Build date:", buildDate)
+	fmt.Println("Build commit:", buildCommit)
+
 	var cfg config.Config
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
