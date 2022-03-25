@@ -1,6 +1,6 @@
 module github.com/lipandr/yandex_practicum_url_shortener
 
-go 1.18
+go 1.17
 
 replace github.com/lipandr/yandex_practicum_url_shortener => ./
 

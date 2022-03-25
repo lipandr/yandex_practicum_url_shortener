@@ -41,17 +41,17 @@ type ConfigData struct {
 func main() {
 	appFile, err := os.Executable()
 	if err != nil {
-		panic(any(err))
+		panic(err)
 	}
 
 	data, err := os.ReadFile(filepath.Join(filepath.Dir(appFile), Config))
 	if err != nil {
-		panic(any(err))
+		panic(err)
 	}
 
 	var cfg ConfigData
 	if err = json.Unmarshal(data, &cfg); err != nil {
-		panic(any(err))
+		panic(err)
 	}
 
 	analyzers := []*analysis.Analyzer{
