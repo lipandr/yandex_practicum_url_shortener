@@ -49,5 +49,13 @@ func (a *application) Run() error {
 
 	r.HandleFunc("/", a.DefaultHandler)
 
+	if a.cfg.EnableHTTPS {
+		// Generate private key (.key)
+		// openssl genrsa -out server.key 2048
+		// Generation of self-signed(x509) public key (PEM-encodings .pem|.crt) based on the private (.key)
+		// openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+		return http.ListenAndServeTLS(a.cfg.ServerAddress, "server.crt", "server.key", r)
+	}
+
 	return http.ListenAndServe(a.cfg.ServerAddress, r)
 }
