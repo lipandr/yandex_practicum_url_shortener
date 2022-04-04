@@ -36,6 +36,7 @@ func main() {
 	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL")
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "File Storage Path")
 	flag.StringVar(&cfg.DatabaseDsn, "d", cfg.DatabaseDsn, "Data base path string")
+	flag.BoolVar(&cfg.EnableHTTPS, "s", cfg.EnableHTTPS, "Enable HTTPS server mode")
 	flag.Parse()
 
 	db, err := dao.NewDB(cfg.DatabaseDsn)
