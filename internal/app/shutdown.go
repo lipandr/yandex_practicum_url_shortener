@@ -32,7 +32,7 @@ func (a *application) AppShutdown(w http.ResponseWriter, _ *http.Request) {
 // WaitShutdown handler ожидающий завершение сервера
 func (a *application) WaitShutdown() {
 	irqSig := make(chan os.Signal, 1)
-	signal.Notify(irqSig, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(irqSig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	select {
 	case sig := <-irqSig:
