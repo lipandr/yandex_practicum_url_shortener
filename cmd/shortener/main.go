@@ -2,13 +2,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 
 	_ "net/http/pprof"
-
-	"github.com/caarlos0/env/v6"
 
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/app"
 	"github.com/lipandr/yandex_practicum_url_shortener/internal/config"
@@ -27,17 +24,7 @@ func main() {
 	fmt.Println("Build date:", buildDate)
 	fmt.Println("Build commit:", buildCommit)
 
-	var cfg config.Config
-	if err := env.Parse(&cfg); err != nil {
-		log.Fatal(err)
-	}
-
-	flag.StringVar(&cfg.ServerAddress, "a", cfg.ServerAddress, "Server address")
-	flag.StringVar(&cfg.BaseURL, "b", cfg.BaseURL, "Base URL")
-	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "File Storage Path")
-	flag.StringVar(&cfg.DatabaseDsn, "d", cfg.DatabaseDsn, "Data base path string")
-	flag.BoolVar(&cfg.EnableHTTPS, "s", cfg.EnableHTTPS, "Enable HTTPS server mode")
-	flag.Parse()
+	cfg := config.InitConfig()
 
 	db, err := dao.NewDB(cfg.DatabaseDsn)
 	if err != nil {
