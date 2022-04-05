@@ -10,7 +10,7 @@ import (
 )
 
 // DBPing handler проверяет соединение с базой данных.
-// При успешной проверке хендлер возвращает HTTP-статус 200 OK,
+// При успешной проверке возвращает HTTP-статус 200 OK,
 // при неуспешной — 500 Internal Server Error.
 func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("postgres", a.cfg.DatabaseDsn)
@@ -19,7 +19,7 @@ func (a *application) DBPing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer func() {
-		db.Close()
+		_ = db.Close()
 	}()
 
 	ctx := r.Context()
