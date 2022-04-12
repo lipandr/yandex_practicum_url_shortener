@@ -70,7 +70,7 @@ func (svc dBService) UsersURLs(userID string) map[string]string {
 	}
 
 	defer func() {
-		rows.Close()
+		_ = rows.Close()
 	}()
 
 	for rows.Next() {
@@ -106,4 +106,25 @@ func (svc *dBService) DeleteURLS(userID string, url string) {
 	if err != nil {
 		fmt.Printf("URL exsists: %v\n", err)
 	}
+}
+
+// GetStats сервис запросов к БД отвечающий за предоставление статистики по сервису.
+// Первым значением возвращает общее количество сокращенных ссылок.
+// Вторым значение возвращает количество уникальных пользователей сервиса.
+func (svc *dBService) GetStats() (int, int, error) {
+	var urls, users int
+
+	row := svc.db.QueryRow("SELECT count(*) FROM url;")
+	err := row.Scan(&urls)
+	if err != nil {
+		return 0, 0, fmt.Errorf("DB Error: %v", err)
+	}
+
+	row = svc.db.QueryRow("SELECT count(DISTINCT created_by) FROM url;")
+	err = row.Scan(&users)
+	if err != nil {
+		return 0, 0, fmt.Errorf("DB Error: %v", err)
+	}
+
+	return urls, users, nil
 }

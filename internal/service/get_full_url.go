@@ -25,5 +25,10 @@ func (svc *service) UsersURLs(userID string) map[string]string {
 }
 
 // DeleteURLS метод-заглушка для реализации интерфейса Service.
-func (svc *service) DeleteURLS(userID string, url string) {
+func (svc *service) DeleteURLS(_ string, _ string) {
+}
+
+// GetStats метод-заглушка для реализации интерфейса Service.
+func (svc *service) GetStats() (int, int, error) {
+	return 0, 0, nil
 }
