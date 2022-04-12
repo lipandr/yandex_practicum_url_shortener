@@ -19,6 +19,7 @@ type Application interface {
 	DBPing(w http.ResponseWriter, r *http.Request)
 	DefaultHandler(w http.ResponseWriter, r *http.Request)
 	AppShutdown(w http.ResponseWriter, r *http.Request)
+	GetStats(w http.ResponseWriter, r *http.Request)
 }
 
 // Структура Dependency injection приложения.
@@ -44,11 +45,16 @@ func NewApp(cfg config.Config, svc service.Service) *application {
 	}
 
 	r := mux.NewRouter()
-	r.Use(middleware.GzipMiddleware, middleware.AuthMiddleware)
+	r.Use(
+		middleware.GzipMiddleware,
+		middleware.AuthMiddleware,
+		middleware.TrustedSubnetMiddleware(a.cfg.TrustedSubnet),
+	)
 
 	r.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 
 	r.HandleFunc("/", a.EncodeURL).Methods(http.MethodPost)
+	r.HandleFunc("/api/internal/stats", a.GetStats).Methods(http.MethodGet)
 	r.HandleFunc("/api/admin/shutdown", a.AppShutdown).Methods(http.MethodGet)
 	r.HandleFunc("/api/shorten/batch", a.Batch).Methods(http.MethodPost)
 	r.HandleFunc("/api/shorten", a.JSONEncodeURL).Methods(http.MethodPost)

@@ -13,6 +13,7 @@ type Service interface {
 	EncodeURL(userID, url string) (string, error)
 	UsersURLs(userID string) map[string]string
 	DeleteURLS(userID string, url string)
+	GetStats() (int, int, error)
 }
 
 // Структура dBService описывающая интерфейс подключения к БД.

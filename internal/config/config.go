@@ -14,7 +14,8 @@ import (
 // флаг -f, отвечающий за путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH);
 // флаг -d, отвечающий за путь подключения к базе данных с сокращенными URL (переменная DATABASE_DSN);
 // флаг -s, отвечающий за запуск сервера приложения в режиме HTTPS (переменная ENABLE_HTTPS);
-// флаг -c, отвечающий возможность конфигурации приложения с помощью файла в формате JSON.
+// флаг -c, отвечающий возможность конфигурации приложения с помощью файла в формате JSON (переменная CONFIG);
+// флаг -t, отвечающий настройку параметра доверенной IP-подсети (переменная TRUSTED_SUBNET).
 type Config struct {
 	ServerAddress   string `json:"server_address" env:"SERVER_ADDRESS" envDefault:"localhost:8080"`
 	BaseURL         string `json:"base_url" env:"BASE_URL" envDefault:"http://localhost:8080"`
@@ -22,6 +23,7 @@ type Config struct {
 	DatabaseDsn     string `json:"database_dsn" env:"DATABASE_DSN" envDefault:"postgres://localhost:5432/urlshorten?sslmode=disable"`
 	EnableHTTPS     bool   `json:"enable_https" env:"ENABLE_HTTPS" envDefault:"false"`
 	Config          string `env:"CONFIG"`
+	TrustedSubnet   string `json:"trusted_subnet" env:"TRUSTED_SUBNET"`
 }
 
 func InitConfig() Config {
@@ -37,6 +39,7 @@ func InitConfig() Config {
 	flag.StringVar(&cfg.DatabaseDsn, "d", cfg.DatabaseDsn, "Data base path string")
 	flag.BoolVar(&cfg.EnableHTTPS, "s", cfg.EnableHTTPS, "Enable HTTPS server mode")
 	flag.StringVar(&cfg.Config, "c", cfg.Config, "JSON config file")
+	flag.StringVar(&cfg.TrustedSubnet, "t", cfg.TrustedSubnet, "Enable trusted service subnet")
 	flag.Parse()
 
 	// Read and parse JSON file if flag -c with value exists
@@ -62,6 +65,9 @@ func InitConfig() Config {
 	}
 	if !cfg.EnableHTTPS || jsonCfg.EnableHTTPS {
 		cfg.EnableHTTPS = jsonCfg.EnableHTTPS
+	}
+	if cfg.TrustedSubnet == "" {
+		cfg.TrustedSubnet = jsonCfg.TrustedSubnet
 	}
 
 	return cfg
